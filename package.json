@@ -1,0 +1,45 @@
+{
+  "name": "@atlas/atlascms-sdk-js",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for Atlas CMS REST and GraphQL APIs.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist coverage",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atlascms/atlascms-sdk-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/atlascms/atlascms-sdk-js/issues"
+  },
+  "homepage": "https://github.com/atlascms/atlascms-sdk-js#readme",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
