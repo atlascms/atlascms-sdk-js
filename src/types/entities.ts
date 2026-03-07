@@ -58,7 +58,29 @@ export interface User<TAttributes extends Record<string, unknown> = Record<strin
   createdBy: string;
   modifiedAt: string;
   modifiedBy: string;
+  notes?: string;
+  picture?: string;
   attributes?: TAttributes;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  system: boolean;
+  permissions: string[];
+}
+
+export interface PermissionSection {
+  name?: string;
+  feature?: string;
+  permissions?: string[];
+}
+
+export interface PermissionGroup {
+  group?: string;
+  type?: string;
+  key?: string;
+  sections?: PermissionSection[];
 }
 
 export interface PagedMetadata {

@@ -51,6 +51,27 @@ export interface ContentsApi {
   ): Promise<void>;
 
   remove(type: string, id: string, options?: AtlasRequestOptions): Promise<void>;
+
+  changeStatus(
+    type: string,
+    id: string,
+    status: "published" | "unpublished",
+    options?: AtlasRequestOptions
+  ): Promise<void>;
+
+  createTranslation(
+    type: string,
+    id: string,
+    locale?: string,
+    options?: AtlasRequestOptions
+  ): Promise<{ id: string }>;
+
+  duplicate(
+    type: string,
+    id: string,
+    locales?: boolean,
+    options?: AtlasRequestOptions
+  ): Promise<{ id: string }>;
 }
 
 export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, project: string): ContentsApi {
@@ -142,6 +163,41 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
         method: "DELETE",
         ...options
       });
+    },
+
+    async changeStatus(type, id, status, options) {
+      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/status`;
+      const url = joinPath(restBaseUrl, path);
+      await http.request<void>({
+        url,
+        method: "POST",
+        body: { status },
+        ...options
+      });
+    },
+
+    async createTranslation(type, id, locale, options) {
+      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/create-translation`;
+      const url = joinPath(restBaseUrl, path);
+      const result = await http.request<{ value?: string; key?: string }>({
+        url,
+        method: "POST",
+        body: { locale },
+        ...options
+      });
+      return { id: String(result?.value ?? result?.key ?? "") };
+    },
+
+    async duplicate(type, id, locales, options) {
+      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/duplicate`;
+      const url = joinPath(restBaseUrl, path);
+      const result = await http.request<{ value?: string; key?: string }>({
+        url,
+        method: "POST",
+        body: { locales },
+        ...options
+      });
+      return { id: String(result?.value ?? result?.key ?? "") };
     }
   };
 }

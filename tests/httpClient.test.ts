@@ -53,6 +53,25 @@ describe("AtlasHttpClient", () => {
     expect(new Headers(options?.headers).get("authorization")).toBe("Bearer override-token");
   });
 
+  it("sends FormData body without overriding content-type", async () => {
+    const fetchFn = vi.fn(async () => {
+      return new Response(JSON.stringify({ id: "x" }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }) as unknown as typeof fetch;
+
+    const client = new AtlasHttpClient(createConfig(fetchFn));
+    const form = new FormData();
+    form.append("file", new Blob(["data"]), "file.txt");
+
+    await client.request({ method: "POST", url: "https://api.example.com/upload", body: form });
+
+    const [, options] = vi.mocked(fetchFn).mock.calls[0]!;
+    expect(options?.body).toBeInstanceOf(FormData);
+    expect(new Headers(options?.headers).get("content-type")).toBeNull();
+  });
+
   it("normalizes API errors", async () => {
     const fetchFn = vi.fn(async () => {
       return new Response(JSON.stringify({ message: "Invalid payload", code: "bad_request" }), {

@@ -7,7 +7,12 @@ export { usersQuery, type UsersQueryBuilder } from "./query-builder/usersQueryBu
 export { AtlasHttpError, AtlasNetworkError, AtlasTimeoutError } from "./http/errors";
 
 export type { AtlasClientConfig, AtlasRequestOptions, FilterOperator, FilterValue, QueryStatus, SortDirection } from "./types/http";
-export type { Content, ContentStatus, Media, PagedMetadata, PagedResult, User } from "./types/entities";
+export type { Content, ContentStatus, Media, PagedMetadata, PagedResult, User, Role, PermissionGroup, PermissionSection } from "./types/entities";
+
+export type { ContentsApi } from "./modules/contents";
+export type { MediaApi, MediaUploadInput } from "./modules/media";
+export type { UsersApi, CreateUserInput, UpdateUserInput } from "./modules/users";
+export type { RolesApi, CreateRoleInput, UpdateRoleInput } from "./modules/roles";
 
 export type { ContentFilterField, ContentSortField } from "./query-builder/contentsQueryBuilder";
 export type { MediaFilterField, MediaSortField } from "./query-builder/mediaQueryBuilder";

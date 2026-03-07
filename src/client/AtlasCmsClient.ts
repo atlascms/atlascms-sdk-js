@@ -3,12 +3,14 @@ import { createContentsApi, type ContentsApi } from "../modules/contents";
 import { createGraphqlApi, type GraphqlApi } from "../modules/graphql";
 import { createMediaApi, type MediaApi } from "../modules/media";
 import { createUsersApi, type UsersApi } from "../modules/users";
+import { createRolesApi, type RolesApi } from "../modules/roles";
 import type { AtlasClientConfig } from "../types/http";
 
 export interface AtlasCmsClient {
   contents: ContentsApi;
   media: MediaApi;
   users: UsersApi;
+  roles: RolesApi;
   graphql: GraphqlApi;
 }
 
@@ -21,6 +23,7 @@ export function createAtlasCmsClient(config: AtlasClientConfig): AtlasCmsClient 
     contents: createContentsApi(http, config.restBaseUrl, config.project),
     media: createMediaApi(http, config.restBaseUrl, config.project),
     users: createUsersApi(http, config.restBaseUrl, config.project),
+    roles: createRolesApi(http, config.restBaseUrl, config.project),
     graphql: createGraphqlApi(http, config.graphqlBaseUrl)
   };
 }

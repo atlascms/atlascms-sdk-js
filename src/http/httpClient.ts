@@ -4,7 +4,7 @@ import type { AtlasClientConfig, AtlasRequestOptions } from "../types/http";
 interface HttpRequestConfig extends AtlasRequestOptions {
   url: string;
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  body?: unknown;
+  body?: unknown | FormData;
 }
 
 export class AtlasHttpClient {
@@ -33,7 +33,7 @@ export class AtlasHttpClient {
       const response = await this.fetchFn(request.url, {
         method: request.method,
         headers,
-        body: request.body === undefined ? undefined : JSON.stringify(request.body),
+        body: request.body === undefined ? undefined : request.body instanceof FormData ? request.body : JSON.stringify(request.body),
         signal
       });
 
@@ -68,7 +68,7 @@ export class AtlasHttpClient {
 
   private createHeaders(apiKey?: string, customHeaders?: HeadersInit, body?: unknown): Headers {
     const headers = new Headers(this.defaultHeaders);
-    if (body !== undefined) {
+    if (body !== undefined && !(body instanceof FormData)) {
       headers.set("content-type", "application/json");
     }
 
