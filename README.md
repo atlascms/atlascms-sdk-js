@@ -221,6 +221,104 @@ const client = createAtlasCmsClient({
 });
 ```
 
+## Exported symbols
+
+### Factory
+
+| Export | Description |
+|---|---|
+| `createAtlasCmsClient(config)` | Creates and returns an `AtlasCmsClient` instance |
+
+### Query builders
+
+| Export | Description |
+|---|---|
+| `contentsQuery()` | Builder for contents queries |
+| `mediaQuery()` | Builder for media queries |
+| `usersQuery()` | Builder for users queries |
+
+### Error classes
+
+| Export | Description |
+|---|---|
+| `AtlasHttpError` | API responded with a non-2xx status (exposes `status`, `code`, `message`, `details`, `requestId`) |
+| `AtlasNetworkError` | Request could not reach the API (network failure, DNS, etc.) |
+| `AtlasTimeoutError` | Request exceeded the configured `timeoutMs` |
+
+### Types
+
+#### Config & options
+| Export | Description |
+|---|---|
+| `AtlasClientConfig` | Client configuration passed to `createAtlasCmsClient` |
+| `AtlasRequestOptions` | Per-request options (`apiKey`, `headers`, `signal`, `timeoutMs`) |
+
+#### Query & filter
+| Export | Description |
+|---|---|
+| `FilterOperator` | Union of all supported filter operators (`eq`, `neq`, `contains`, `gt`, …) |
+| `FilterValue` | Accepted filter value types (`string`, `number`, `boolean`, `Date`, arrays) |
+| `SortDirection` | `"asc"` \| `"desc"` |
+| `QueryStatus` | `"all"` \| `"published"` \| `"unpublished"` |
+| `ContentFilterField` | Typed filter field names for `contentsQuery` |
+| `ContentSortField` | Typed sort field names for `contentsQuery` |
+| `MediaFilterField` | Typed filter field names for `mediaQuery` |
+| `MediaSortField` | Typed sort field names for `mediaQuery` |
+| `UserFilterField` | Typed filter field names for `usersQuery` |
+| `UserSortField` | Typed sort field names for `usersQuery` |
+
+#### Entities
+| Export | Description |
+|---|---|
+| `Content<TAttributes>` | Content item returned by the API |
+| `ContentStatus` | `"published"` \| `"unpublished"` |
+| `Media` | Media item returned by the API |
+| `User<TAttributes>` | User item returned by the API |
+| `Role` | Role item returned by the API |
+| `PermissionGroup` | Permission group (used in `roles.getPermissions`) |
+| `PermissionSection` | Permission section nested inside a `PermissionGroup` |
+| `PagedResult<T>` | Paginated response wrapper (`{ data, metadata }`) |
+| `PagedMetadata` | Pagination metadata (`totalCount`, `currentPage`, `pageSize`, …) |
+
+#### SEO
+| Export | Description |
+|---|---|
+| `ContentSeo` | Full SEO metadata object |
+| `ContentSeoOpenGraph` | Open Graph fields |
+| `ContentSeoX` | X (Twitter) card fields |
+| `ContentSeoFaq` | FAQ schema fields |
+| `ContentSeoJsonld` | JSON-LD schema fields |
+
+#### Models & components
+| Export | Description |
+|---|---|
+| `Component` | Shared shape for both models and components |
+| `ComponentModel` | Model-specific extension |
+| `IField` | Field definition inside a model or component |
+| `SchemaType` | Enum of supported field schema types |
+
+#### Module APIs & inputs
+| Export | Description |
+|---|---|
+| `ContentsApi` | Interface of `client.contents` |
+| `CreateContentInput` | Payload for `contents.create` |
+| `UpdateContentInput` | Payload for `contents.update` |
+| `UpdateContentSeoInput` | Payload for `contents.updateSeo` |
+| `MediaApi` | Interface of `client.media` |
+| `MediaUploadInput` | Input for `media.upload` |
+| `UsersApi` | Interface of `client.users` |
+| `CreateUserInput` | Payload for `users.create` |
+| `UpdateUserInput` | Payload for `users.update` |
+| `RolesApi` | Interface of `client.roles` |
+| `CreateRoleInput` | Payload for `roles.create` |
+| `UpdateRoleInput` | Payload for `roles.update` |
+| `ModelsApi` | Interface of `client.models` |
+| `CreateModelInput` | Payload for `models.create` |
+| `UpdateModelInput` | Payload for `models.update` |
+| `ComponentsApi` | Interface of `client.components` |
+| `CreateComponentInput` | Payload for `components.create` |
+| `UpdateComponentInput` | Payload for `components.update` |
+
 ## Development
 
 ```bash
