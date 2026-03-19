@@ -1,5 +1,5 @@
 {
-  "name": "@atlas/atlascms-sdk-js",
+  "name": "atlascms-sdk-js",
   "version": "1.0.0",
   "description": "TypeScript SDK for Atlas CMS REST and GraphQL APIs.",
   "main": "./dist/index.cjs",
