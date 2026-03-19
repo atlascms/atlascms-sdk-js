@@ -8,17 +8,30 @@ interface HttpRequestConfig extends AtlasRequestOptions {
 }
 
 export class AtlasHttpClient {
-  private readonly fetchFn: typeof fetch;
+  private readonly fetchFn: typeof fetch | undefined;
   private readonly defaultHeaders: HeadersInit | undefined;
   private readonly defaultApiKey: string;
 
   public constructor(config: AtlasClientConfig) {
-    this.fetchFn = config.fetchFn ?? fetch;
+    this.fetchFn = config.fetchFn;
     this.defaultHeaders = config.defaultHeaders;
     this.defaultApiKey = config.apiKey;
   }
 
+  private resolveFetch(): typeof fetch {
+    if (this.fetchFn) return this.fetchFn;
+    const globalFetch = (globalThis as Record<string, unknown>).fetch;
+    if (typeof globalFetch === "function") {
+      return (globalFetch as typeof fetch).bind(globalThis);
+    }
+    throw new Error(
+      "fetch is not available in this environment. " +
+        "Pass a fetchFn in the client config (e.g. from 'node-fetch' or 'undici')."
+    );
+  }
+
   public async request<TResponse>(request: HttpRequestConfig): Promise<TResponse> {
+    const fetchFn = this.resolveFetch();
     const controller = request.timeoutMs ? new AbortController() : undefined;
     const timeoutId = request.timeoutMs
       ? setTimeout(() => {
@@ -30,7 +43,7 @@ export class AtlasHttpClient {
     const headers = this.createHeaders(request.apiKey, request.headers, request.body);
 
     try {
-      const response = await this.fetchFn(request.url, {
+      const response = await fetchFn(request.url, {
         method: request.method,
         headers,
         body: request.body === undefined ? undefined : request.body instanceof FormData ? request.body : JSON.stringify(request.body),
