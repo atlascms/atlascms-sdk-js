@@ -1,3 +1,5 @@
+import type { ContentSeo } from "./seo";
+
 export type ContentStatus = "published" | "unpublished";
 
 export interface Content<TAttributes extends Record<string, unknown> = Record<string, unknown>> {
@@ -11,6 +13,7 @@ export interface Content<TAttributes extends Record<string, unknown> = Record<st
   hash: string;
   status: ContentStatus;
   attributes?: TAttributes;
+  seo?: ContentSeo | null;
   locales?: Array<{ locale: string; status: ContentStatus }>;
 }
 

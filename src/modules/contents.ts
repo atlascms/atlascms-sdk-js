@@ -1,5 +1,6 @@
 import type { AtlasRequestOptions } from "../types/http";
 import type { Content, PagedResult } from "../types/entities";
+import type { ContentSeo } from "../types/seo";
 import type { AtlasHttpClient } from "../http/httpClient";
 import { appendQuery, joinPath, type QueryInput } from "./internal";
 
@@ -7,12 +8,18 @@ export interface CreateContentInput<TAttributes extends Record<string, unknown> 
   locale?: string;
   type: string;
   attributes?: TAttributes;
+  seo?: ContentSeo | null;
 }
 
 export interface UpdateContentInput<TAttributes extends Record<string, unknown> = Record<string, unknown>> {
   locale?: string;
   type: string;
   attributes?: TAttributes;
+  seo?: ContentSeo | null;
+}
+
+export interface UpdateContentSeoInput {
+  seo: ContentSeo | null;
 }
 
 export interface ContentsApi {
@@ -72,6 +79,13 @@ export interface ContentsApi {
     locales?: boolean,
     options?: AtlasRequestOptions
   ): Promise<{ id: string }>;
+
+  updateSeo(
+    type: string,
+    id: string,
+    payload: UpdateContentSeoInput,
+    options?: AtlasRequestOptions
+  ): Promise<void>;
 }
 
 export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, project: string): ContentsApi {
@@ -198,6 +212,17 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
         ...options
       });
       return { id: String(result?.value ?? result?.key ?? "") };
+    },
+
+    async updateSeo(type, id, payload, options) {
+      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/seo`;
+      const url = joinPath(restBaseUrl, path);
+      await http.request<void>({
+        url,
+        method: "POST",
+        body: payload,
+        ...options
+      });
     }
   };
 }
