@@ -40,13 +40,10 @@ export interface ModelsApi {
   unpublish(id: string, options?: AtlasRequestOptions): Promise<void>;
 }
 
-export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, project: string): ModelsApi {
-  const encodedProject = encode(project);
-
+export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string): ModelsApi {
   return {
-    async list(query?, options) {
-      const path = `/${encodedProject}/models`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+    async list(query?, options?) {
+      const url = appendQuery(joinPath(restBaseUrl, "/models"), query);
       return http.request<PagedResult<Component>>({
         url,
         method: "GET",
@@ -55,8 +52,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, proj
     },
 
     async getById(id, options) {
-      const path = `/${encodedProject}/models/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/models/${encode(id)}`);
       return http.request<Component>({
         url,
         method: "GET",
@@ -65,8 +61,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, proj
     },
 
     async create(payload, options) {
-      const path = `/${encodedProject}/models`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/models");
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -77,8 +72,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, proj
     },
 
     async update(payload, options) {
-      const path = `/${encodedProject}/models/${encode(payload.id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/models/${encode(payload.id)}`);
       await http.request<void>({
         url,
         method: "PUT",
@@ -88,8 +82,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, proj
     },
 
     async remove(id, options) {
-      const path = `/${encodedProject}/models/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/models/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
@@ -98,8 +91,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, proj
     },
 
     async publish(id, options) {
-      const path = `/${encodedProject}/models/${encode(id)}/publish`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/models/${encode(id)}/publish`);
       await http.request<void>({
         url,
         method: "POST",
@@ -108,8 +100,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string, proj
     },
 
     async unpublish(id, options) {
-      const path = `/${encodedProject}/models/${encode(id)}/unpublish`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/models/${encode(id)}/unpublish`);
       await http.request<void>({
         url,
         method: "POST",

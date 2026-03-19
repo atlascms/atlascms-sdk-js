@@ -5,9 +5,8 @@ import type { AtlasClientConfig } from "../src/types/http";
 
 function createConfig(fetchFn: typeof fetch): AtlasClientConfig {
   return {
-    project: "my-project",
-    restBaseUrl: "https://api.example.com",
-    graphqlBaseUrl: "https://gql.example.com/graphql",
+    projectId: "my-project",
+    baseUrl: "https://api.example.com",
     apiKey: "default-token",
     fetchFn
   };

@@ -88,17 +88,14 @@ export interface ContentsApi {
   ): Promise<void>;
 }
 
-export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, project: string): ContentsApi {
-  const encodedProject = encode(project);
-
+export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string): ContentsApi {
   return {
     async list<TAttributes extends Record<string, unknown> = Record<string, unknown>>(
       type: string,
       query?: QueryInput,
       options?: AtlasRequestOptions
     ) {
-      const path = `/${encodedProject}/contents/${encode(type)}`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, `/contents/${encode(type)}`), query);
       return http.request<PagedResult<Content<TAttributes>>>({
         url,
         method: "GET",
@@ -112,8 +109,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
       query?: QueryInput,
       options?: AtlasRequestOptions
     ) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}`), query);
       return http.request<Content<TAttributes>>({
         url,
         method: "GET",
@@ -126,8 +122,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
       query?: QueryInput,
       options?: AtlasRequestOptions
     ) {
-      const path = `/${encodedProject}/contents/${encode(type)}/single`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, `/contents/${encode(type)}/single`), query);
       return http.request<Content<TAttributes>>({
         url,
         method: "GET",
@@ -136,8 +131,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async count(type, query, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/count`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, `/contents/${encode(type)}/count`), query);
       const result = await http.request<{ value?: number; key?: number }>({
         url,
         method: "GET",
@@ -147,8 +141,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async create(type, payload, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}`);
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -159,8 +152,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async update(type, id, payload, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}`);
       await http.request<void>({
         url,
         method: "PUT",
@@ -170,8 +162,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async remove(type, id, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
@@ -180,8 +171,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async changeStatus(type, id, status, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/status`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/status`);
       await http.request<void>({
         url,
         method: "POST",
@@ -191,8 +181,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async createTranslation(type, id, locale, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/create-translation`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/create-translation`);
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -203,8 +192,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async duplicate(type, id, locales, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/duplicate`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/duplicate`);
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -215,8 +203,7 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string, pr
     },
 
     async updateSeo(type, id, payload, options) {
-      const path = `/${encodedProject}/contents/${encode(type)}/${encode(id)}/seo`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/seo`);
       await http.request<void>({
         url,
         method: "POST",

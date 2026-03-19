@@ -30,13 +30,10 @@ export interface ComponentsApi {
   remove(id: string, options?: AtlasRequestOptions): Promise<void>;
 }
 
-export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string, project: string): ComponentsApi {
-  const encodedProject = encode(project);
-
+export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string): ComponentsApi {
   return {
-    async list(query?, options) {
-      const path = `/${encodedProject}/components`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+    async list(query?, options?) {
+      const url = appendQuery(joinPath(restBaseUrl, "/components"), query);
       return http.request<PagedResult<Component>>({
         url,
         method: "GET",
@@ -45,8 +42,7 @@ export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string, 
     },
 
     async getById(id, options) {
-      const path = `/${encodedProject}/components/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/components/${encode(id)}`);
       return http.request<Component>({
         url,
         method: "GET",
@@ -55,8 +51,7 @@ export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string, 
     },
 
     async create(payload, options) {
-      const path = `/${encodedProject}/components`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/components");
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -67,8 +62,7 @@ export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string, 
     },
 
     async update(payload, options) {
-      const path = `/${encodedProject}/components/${encode(payload.id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/components/${encode(payload.id)}`);
       await http.request<void>({
         url,
         method: "PUT",
@@ -78,8 +72,7 @@ export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string, 
     },
 
     async remove(id, options) {
-      const path = `/${encodedProject}/components/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/components/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",

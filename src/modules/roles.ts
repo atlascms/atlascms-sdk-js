@@ -21,13 +21,10 @@ export interface RolesApi {
   getPermissions(options?: AtlasRequestOptions): Promise<PermissionGroup[]>;
 }
 
-export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string, project: string): RolesApi {
-  const encodedProject = encode(project);
-
+export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string): RolesApi {
   return {
     async list(options) {
-      const path = `/${encodedProject}/users/roles`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/users/roles");
       return http.request<Role[]>({
         url,
         method: "GET",
@@ -36,8 +33,7 @@ export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async create(payload, options) {
-      const path = `/${encodedProject}/users/roles`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/users/roles");
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -48,8 +44,7 @@ export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async update(id, payload, options) {
-      const path = `/${encodedProject}/users/roles/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/roles/${encode(id)}`);
       await http.request<void>({
         url,
         method: "PUT",
@@ -59,8 +54,7 @@ export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async remove(id, options) {
-      const path = `/${encodedProject}/users/roles/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/roles/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
@@ -69,8 +63,7 @@ export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async getPermissions(options) {
-      const path = `/${encodedProject}/users/roles/permissions`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/users/roles/permissions");
       return http.request<PermissionGroup[]>({
         url,
         method: "GET",

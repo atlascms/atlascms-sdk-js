@@ -19,13 +19,10 @@ export interface MediaApi {
   upload(input: MediaUploadInput, options?: AtlasRequestOptions): Promise<Media>;
 }
 
-export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string, project: string): MediaApi {
-  const encodedProject = encode(project);
-
+export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string): MediaApi {
   return {
     async list(query, options) {
-      const path = `/${encodedProject}/media-library/media`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, "/media-library/media"), query);
       return http.request<PagedResult<Media>>({
         url,
         method: "GET",
@@ -34,8 +31,7 @@ export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async getById(id, options) {
-      const path = `/${encodedProject}/media-library/media/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/media-library/media/${encode(id)}`);
       return http.request<Media>({
         url,
         method: "GET",
@@ -44,8 +40,7 @@ export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async remove(id, options) {
-      const path = `/${encodedProject}/media-library/media/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/media-library/media/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
@@ -54,8 +49,7 @@ export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async setTags(id, tags, options) {
-      const path = `/${encodedProject}/media-library/media/${encode(id)}/tags`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/media-library/media/${encode(id)}/tags`);
       await http.request<void>({
         url,
         method: "POST",
@@ -65,8 +59,7 @@ export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async upload(input, options) {
-      const path = `/${encodedProject}/media-library/media/upload`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/media-library/media/upload");
       const form = new FormData();
       const fileName = input.fileName ?? (input.file instanceof File ? input.file.name : undefined);
       form.append("file", input.file, fileName);

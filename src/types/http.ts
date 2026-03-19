@@ -48,10 +48,10 @@ export interface AtlasRequestOptions {
 }
 
 export interface AtlasClientConfig {
-  project: string;
-  restBaseUrl: string;
-  graphqlBaseUrl: string;
+  projectId: string;
   apiKey: string;
+  /** Defaults to "https://api.atlascms.io" */
+  baseUrl?: string;
   fetchFn?: typeof fetch;
   defaultHeaders?: HeadersInit;
 }

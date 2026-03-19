@@ -8,6 +8,8 @@ import { createModelsApi, type ModelsApi } from "../modules/models";
 import { createComponentsApi, type ComponentsApi } from "../modules/components";
 import type { AtlasClientConfig } from "../types/http";
 
+const DEFAULT_BASE_URL = "https://api.atlascms.io";
+
 export interface AtlasCmsClient {
   contents: ContentsApi;
   media: MediaApi;
@@ -21,28 +23,26 @@ export interface AtlasCmsClient {
 export function createAtlasCmsClient(config: AtlasClientConfig): AtlasCmsClient {
   validateConfig(config);
 
+  const base = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
+  const restBaseUrl = `${base}/${encodeURIComponent(config.projectId)}`;
+  const graphqlUrl = `${restBaseUrl}/graphql`;
+
   const http = new AtlasHttpClient(config);
 
   return {
-    contents: createContentsApi(http, config.restBaseUrl, config.project),
-    media: createMediaApi(http, config.restBaseUrl, config.project),
-    users: createUsersApi(http, config.restBaseUrl, config.project),
-    roles: createRolesApi(http, config.restBaseUrl, config.project),
-    models: createModelsApi(http, config.restBaseUrl, config.project),
-    components: createComponentsApi(http, config.restBaseUrl, config.project),
-    graphql: createGraphqlApi(http, config.graphqlBaseUrl)
+    contents: createContentsApi(http, restBaseUrl),
+    media: createMediaApi(http, restBaseUrl),
+    users: createUsersApi(http, restBaseUrl),
+    roles: createRolesApi(http, restBaseUrl),
+    models: createModelsApi(http, restBaseUrl),
+    components: createComponentsApi(http, restBaseUrl),
+    graphql: createGraphqlApi(http, graphqlUrl)
   };
 }
 
 function validateConfig(config: AtlasClientConfig): void {
-  if (!config.project) {
-    throw new Error("project is required");
-  }
-  if (!config.restBaseUrl) {
-    throw new Error("restBaseUrl is required");
-  }
-  if (!config.graphqlBaseUrl) {
-    throw new Error("graphqlBaseUrl is required");
+  if (!config.projectId) {
+    throw new Error("projectId is required");
   }
   if (!config.apiKey) {
     throw new Error("apiKey is required");

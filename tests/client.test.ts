@@ -16,9 +16,8 @@ function makeEmptyFetch(status = 200): typeof fetch {
 
 function makeClient(fetchFn: typeof fetch) {
   return createAtlasCmsClient({
-    project: "my-project",
-    restBaseUrl: "https://api.example.com",
-    graphqlBaseUrl: "https://graphql.example.com/graphql",
+    projectId: "my-project",
+    baseUrl: "https://api.example.com",
     apiKey: "base-token",
     fetchFn
   });
@@ -431,6 +430,6 @@ describe("graphql", () => {
 
     expect(response.data?.ping).toBe("pong");
     const [url] = vi.mocked(fetchFn).mock.calls[0]!;
-    expect(String(url)).toBe("https://graphql.example.com/graphql");
+    expect(String(url)).toBe("https://api.example.com/my-project/graphql");
   });
 });

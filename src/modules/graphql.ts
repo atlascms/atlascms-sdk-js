@@ -1,6 +1,5 @@
 import type { AtlasRequestOptions } from "../types/http";
 import type { AtlasHttpClient } from "../http/httpClient";
-import { joinPath } from "./internal";
 
 export interface GraphqlRequest<TVariables = Record<string, unknown>> {
   query: string;
@@ -26,20 +25,15 @@ export interface GraphqlApi {
   ): Promise<GraphqlResponse<TData>>;
 }
 
-export function createGraphqlApi(http: AtlasHttpClient, graphqlBaseUrl: string): GraphqlApi {
+export function createGraphqlApi(http: AtlasHttpClient, graphqlUrl: string): GraphqlApi {
   return {
     async execute(request, options) {
-      const url = isAbsoluteUrl(graphqlBaseUrl) ? graphqlBaseUrl : joinPath(graphqlBaseUrl, "/");
       return http.request<GraphqlResponse<unknown>>({
-        url,
+        url: graphqlUrl,
         method: "POST",
         body: request,
         ...options
       }) as Promise<GraphqlResponse<any>>;
     }
   };
-}
-
-function isAbsoluteUrl(value: string): boolean {
-  return value.startsWith("http://") || value.startsWith("https://");
 }

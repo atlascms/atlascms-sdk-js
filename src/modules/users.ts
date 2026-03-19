@@ -57,16 +57,13 @@ export interface UsersApi {
   changePassword(id: string, password: string, options?: AtlasRequestOptions): Promise<void>;
 }
 
-export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, project: string): UsersApi {
-  const encodedProject = encode(project);
-
+export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): UsersApi {
   return {
     async list<TAttributes extends Record<string, unknown> = Record<string, unknown>>(
       query?: QueryInput,
       options?: AtlasRequestOptions
     ) {
-      const path = `/${encodedProject}/users`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, "/users"), query);
       return http.request<PagedResult<User<TAttributes>>>({
         url,
         method: "GET",
@@ -75,8 +72,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async count(query, options) {
-      const path = `/${encodedProject}/users/count`;
-      const url = appendQuery(joinPath(restBaseUrl, path), query);
+      const url = appendQuery(joinPath(restBaseUrl, "/users/count"), query);
       const result = await http.request<{ value?: number; key?: number }>({
         url,
         method: "GET",
@@ -89,8 +85,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
       id: string,
       options?: AtlasRequestOptions
     ) {
-      const path = `/${encodedProject}/users/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/${encode(id)}`);
       return http.request<User<TAttributes>>({
         url,
         method: "GET",
@@ -99,8 +94,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async create(payload, options) {
-      const path = `/${encodedProject}/users/register`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, "/users/register");
       const result = await http.request<{ value?: string; key?: string }>({
         url,
         method: "POST",
@@ -111,8 +105,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async update(id, payload, options) {
-      const path = `/${encodedProject}/users/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/${encode(id)}`);
       await http.request<void>({
         url,
         method: "PUT",
@@ -122,8 +115,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async remove(id, options) {
-      const path = `/${encodedProject}/users/${encode(id)}`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
@@ -132,8 +124,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async changeStatus(id, isActive, options) {
-      const path = `/${encodedProject}/users/${encode(id)}/status`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/${encode(id)}/status`);
       await http.request<void>({
         url,
         method: "POST",
@@ -143,8 +134,7 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string, proje
     },
 
     async changePassword(id, password, options) {
-      const path = `/${encodedProject}/users/${encode(id)}/change-password`;
-      const url = joinPath(restBaseUrl, path);
+      const url = joinPath(restBaseUrl, `/users/${encode(id)}/change-password`);
       await http.request<void>({
         url,
         method: "POST",
