@@ -1,13 +1,14 @@
 import type { AtlasRequestOptions } from "../types/http";
-import type { Component, ComponentModel, IField } from "../types/models";
-import type { PagedResult } from "../types/entities";
+import type { Component, IField } from "../types/models";
+import type { KeyResult } from "../types/entities";
 import type { AtlasHttpClient } from "../http/httpClient";
-import { appendQuery, joinPath, type QueryInput } from "./internal";
+import { joinPath } from "./internal";
 
 export interface CreateModelInput {
-  key: string;
+  key?: string | null;
   name?: string | null;
   description?: string | null;
+  isSingle?: boolean;
   localizable?: boolean;
   enableStageMode?: boolean;
   enableSeo?: boolean;
@@ -25,26 +26,23 @@ export interface UpdateModelInput {
 }
 
 export interface ModelsApi {
-  list(query?: QueryInput, options?: AtlasRequestOptions): Promise<PagedResult<Component>>;
+  list(system?: boolean, options?: AtlasRequestOptions): Promise<Component[]>;
 
   getById(id: string, options?: AtlasRequestOptions): Promise<Component>;
 
   create(payload: CreateModelInput, options?: AtlasRequestOptions): Promise<{ id: string }>;
 
-  update(payload: UpdateModelInput, options?: AtlasRequestOptions): Promise<void>;
+  update(payload: UpdateModelInput, options?: AtlasRequestOptions): Promise<{ id: string }>;
 
   remove(id: string, options?: AtlasRequestOptions): Promise<void>;
-
-  publish(id: string, options?: AtlasRequestOptions): Promise<void>;
-
-  unpublish(id: string, options?: AtlasRequestOptions): Promise<void>;
 }
 
 export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string): ModelsApi {
   return {
-    async list(query?, options?) {
-      const url = appendQuery(joinPath(restBaseUrl, "/models"), query);
-      return http.request<PagedResult<Component>>({
+    async list(system, options) {
+      const url = system === undefined ? joinPath(restBaseUrl, "/content-types/models")
+        : joinPath(restBaseUrl, `/content-types/models?system=${system ? "true" : "false"}`);
+      return http.request<Component[]>({
         url,
         method: "GET",
         ...options
@@ -52,7 +50,7 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string): Mod
     },
 
     async getById(id, options) {
-      const url = joinPath(restBaseUrl, `/models/${encode(id)}`);
+      const url = joinPath(restBaseUrl, `/content-types/models/${encode(id)}`);
       return http.request<Component>({
         url,
         method: "GET",
@@ -61,49 +59,32 @@ export function createModelsApi(http: AtlasHttpClient, restBaseUrl: string): Mod
     },
 
     async create(payload, options) {
-      const url = joinPath(restBaseUrl, "/models");
-      const result = await http.request<{ value?: string; key?: string }>({
+      const url = joinPath(restBaseUrl, "/content-types/models");
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
         body: payload,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async update(payload, options) {
-      const url = joinPath(restBaseUrl, `/models/${encode(payload.id)}`);
-      await http.request<void>({
+      const url = joinPath(restBaseUrl, `/content-types/models/${encode(payload.id)}`);
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "PUT",
         body: payload,
         ...options
       });
+      return { id: String(result?.result ?? "") };
     },
 
     async remove(id, options) {
-      const url = joinPath(restBaseUrl, `/models/${encode(id)}`);
+      const url = joinPath(restBaseUrl, `/content-types/models/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
-        ...options
-      });
-    },
-
-    async publish(id, options) {
-      const url = joinPath(restBaseUrl, `/models/${encode(id)}/publish`);
-      await http.request<void>({
-        url,
-        method: "POST",
-        ...options
-      });
-    },
-
-    async unpublish(id, options) {
-      const url = joinPath(restBaseUrl, `/models/${encode(id)}/unpublish`);
-      await http.request<void>({
-        url,
-        method: "POST",
         ...options
       });
     }

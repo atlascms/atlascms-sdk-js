@@ -1,5 +1,6 @@
 import type { AtlasRequestOptions } from "../types/http";
 import type { Role, PermissionGroup } from "../types/entities";
+import type { KeyResult } from "../types/entities";
 import type { AtlasHttpClient } from "../http/httpClient";
 import { joinPath } from "./internal";
 
@@ -34,21 +35,22 @@ export function createRolesApi(http: AtlasHttpClient, restBaseUrl: string): Role
 
     async create(payload, options) {
       const url = joinPath(restBaseUrl, "/users/roles");
-      const result = await http.request<{ value?: string; key?: string }>({
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
         body: payload,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async update(id, payload, options) {
       const url = joinPath(restBaseUrl, `/users/roles/${encode(id)}`);
+      const body = { id, ...payload };
       await http.request<void>({
         url,
         method: "PUT",
-        body: payload,
+        body,
         ...options
       });
     },

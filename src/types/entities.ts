@@ -3,41 +3,41 @@ import type { ContentSeo } from "./seo";
 export type ContentStatus = "published" | "unpublished";
 
 export interface Content<TAttributes extends Record<string, unknown> = Record<string, unknown>> {
-  id: string;
-  modelKey: string;
-  locale: string;
+  id?: string | null;
+  modelKey?: string | null;
+  locale?: string | null;
   createdAt: string;
-  createdBy: string;
+  createdBy?: string | null;
   modifiedAt: string;
-  modifiedBy: string;
-  hash: string;
-  status: ContentStatus;
+  modifiedBy?: string | null;
+  hash?: string | null;
+  status?: ContentStatus | null;
   attributes?: TAttributes;
   seo?: ContentSeo | null;
-  locales?: Array<{ locale: string; status: ContentStatus }>;
+  locales?: Array<{ locale: string | null; id: string | null }>;
 }
 
 export interface Media {
-  id: string;
-  code: string;
-  folder: string;
-  type: string;
+  id?: string | null;
+  code?: string | null;
+  folder?: string | null;
+  type?: string | null;
   createdAt: string;
-  createdBy: string;
+  createdBy?: string | null;
   modifiedAt: string;
-  modifiedBy: string;
-  author: string;
-  copyright: string;
-  originalFileName: string;
-  name: string;
-  format: string;
-  hash: string;
-  mimeType: string;
+  modifiedBy?: string | null;
+  author?: string | null;
+  copyright?: string | null;
+  originalFileName?: string | null;
+  name?: string | null;
+  format?: string | null;
+  hash?: string | null;
+  mimeType?: string | null;
   size: number;
-  automaticTags: string[];
-  tags: string[];
-  url: string;
-  provider: string;
+  automaticTags?: string[] | null;
+  tags?: string[] | null;
+  url?: string | null;
+  provider?: string | null;
   height: number | null;
   width: number | null;
   horizontalResolution: number | null;
@@ -49,45 +49,46 @@ export interface Media {
 }
 
 export interface User<TAttributes extends Record<string, unknown> = Record<string, unknown>> {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  mobilePhone: string;
-  roles: string[];
+  id?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+  email?: string | null;
+  mobilePhone?: string | null;
+  roles?: string[] | null;
   isActive: boolean;
   createdAt: string;
-  createdBy: string;
+  createdBy?: string | null;
   modifiedAt: string;
-  modifiedBy: string;
+  modifiedBy?: string | null;
   notes?: string;
   picture?: string;
   attributes?: TAttributes;
 }
 
 export interface Role {
-  id: string;
-  name: string;
+  id?: string | null;
+  name?: string | null;
   system: boolean;
-  permissions: string[];
+  permissions?: string[] | null;
 }
 
 export interface PermissionSection {
   name?: string;
   feature?: string;
-  permissions?: string[];
+  permissions?: string[] | null;
 }
 
 export interface PermissionGroup {
   group?: string;
   type?: string;
   key?: string;
-  sections?: PermissionSection[];
+  sections?: PermissionSection[] | null;
 }
 
 export interface PagedMetadata {
-  totalCount: number;
+  // Matches swagger `metadata.count`.
+  count: number;
   totalPages: number;
   currentPage: number;
   pageSize: number;
@@ -96,6 +97,11 @@ export interface PagedMetadata {
 }
 
 export interface PagedResult<T> {
-  data: T[];
+  data?: T[] | null;
   metadata: PagedMetadata;
+}
+
+export interface KeyResult<T> {
+  // Matches swagger `{ result: ... }` wrappers (StringKeyResult / Int32KeyResult).
+  result?: T | null;
 }

@@ -9,7 +9,7 @@ export { AtlasHttpError, AtlasNetworkError, AtlasTimeoutError } from "./http/err
 export type { AtlasClientConfig, AtlasRequestOptions, FilterOperator, FilterValue, QueryStatus, SortDirection } from "./types/http";
 export type { Content, ContentStatus, Media, PagedMetadata, PagedResult, User, Role, PermissionGroup, PermissionSection } from "./types/entities";
 export type { ContentSeo, ContentSeoFaq, ContentSeoJsonld, ContentSeoOpenGraph, ContentSeoX } from "./types/seo";
-export type { Component, ComponentModel, SchemaType, IField } from "./types/models";
+export type { Component, SchemaType, IField, Fieldset, StringStringKeyValue, ModelProperties, ModelFilterFieldType, ModelFilterModel, Model } from "./types/models";
 
 export type { ContentsApi, CreateContentInput, UpdateContentInput, UpdateContentSeoInput } from "./modules/contents";
 export type { MediaApi, MediaUploadInput } from "./modules/media";

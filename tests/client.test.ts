@@ -26,7 +26,7 @@ function makeClient(fetchFn: typeof fetch) {
 const pagedResponse = {
   data: [],
   metadata: {
-    totalCount: 0,
+    count: 0,
     totalPages: 0,
     currentPage: 1,
     pageSize: 10,
@@ -71,7 +71,7 @@ describe("contents", () => {
   });
 
   it("count — returns number value", async () => {
-    const fetchFn = makeJsonFetch({ value: 42 });
+    const fetchFn = makeJsonFetch({ result: 42 });
     const client = makeClient(fetchFn);
 
     const result = await client.contents.count("pages");
@@ -82,10 +82,10 @@ describe("contents", () => {
   });
 
   it("create — POSTs body and returns id", async () => {
-    const fetchFn = makeJsonFetch({ value: "new-id" });
+    const fetchFn = makeJsonFetch({ result: "new-id" });
     const client = makeClient(fetchFn);
 
-    const result = await client.contents.create("pages", { type: "pages", attributes: { title: "Hello" } });
+    const result = await client.contents.create("pages", { attributes: { title: "Hello" } });
 
     expect(result.id).toBe("new-id");
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
@@ -97,7 +97,7 @@ describe("contents", () => {
     const fetchFn = makeEmptyFetch();
     const client = makeClient(fetchFn);
 
-    await client.contents.update("pages", "abc", { type: "pages", attributes: { title: "Updated" } });
+    await client.contents.update("pages", "abc", { attributes: { title: "Updated" } });
 
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/contents/pages/abc");
@@ -124,11 +124,11 @@ describe("contents", () => {
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/contents/pages/abc/status");
     expect(options?.method).toBe("POST");
-    expect(JSON.parse(options?.body as string)).toEqual({ status: "published" });
+    expect(JSON.parse(options?.body as string)).toEqual({ id: "abc", type: "pages", status: "published" });
   });
 
   it("createTranslation — POSTs to /create-translation with locale", async () => {
-    const fetchFn = makeJsonFetch({ value: "translated-id" });
+    const fetchFn = makeJsonFetch({ result: "translated-id" });
     const client = makeClient(fetchFn);
 
     const result = await client.contents.createTranslation("pages", "abc", "it-IT");
@@ -137,11 +137,11 @@ describe("contents", () => {
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/contents/pages/abc/create-translation");
     expect(options?.method).toBe("POST");
-    expect(JSON.parse(options?.body as string)).toEqual({ locale: "it-IT" });
+    expect(JSON.parse(options?.body as string)).toEqual({ id: "abc", type: "pages", locale: "it-IT" });
   });
 
   it("duplicate — POSTs to /duplicate with locales flag", async () => {
-    const fetchFn = makeJsonFetch({ value: "dup-id" });
+    const fetchFn = makeJsonFetch({ result: "dup-id" });
     const client = makeClient(fetchFn);
 
     const result = await client.contents.duplicate("pages", "abc", true);
@@ -150,7 +150,7 @@ describe("contents", () => {
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/contents/pages/abc/duplicate");
     expect(options?.method).toBe("POST");
-    expect(JSON.parse(options?.body as string)).toEqual({ locales: true });
+    expect(JSON.parse(options?.body as string)).toEqual({ id: "abc", type: "pages", locales: true });
   });
 });
 
@@ -214,7 +214,7 @@ describe("media", () => {
 
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/media-library/media/media-id/tags");
-    expect(JSON.parse(options?.body as string)).toEqual({ tags: ["hero", "featured"] });
+    expect(JSON.parse(options?.body as string)).toEqual({ id: "media-id", tags: ["hero", "featured"] });
   });
 });
 
@@ -247,7 +247,7 @@ describe("users", () => {
   });
 
   it("count — returns number", async () => {
-    const fetchFn = makeJsonFetch({ value: 7 });
+    const fetchFn = makeJsonFetch({ result: 7 });
     const client = makeClient(fetchFn);
 
     const result = await client.users.count();
@@ -268,7 +268,7 @@ describe("users", () => {
   });
 
   it("create — POSTs to /register and returns id", async () => {
-    const fetchFn = makeJsonFetch({ value: "new-user-id" });
+    const fetchFn = makeJsonFetch({ result: "new-user-id" });
     const client = makeClient(fetchFn);
 
     const result = await client.users.create({
@@ -320,7 +320,7 @@ describe("users", () => {
 
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/users/user-1/status");
-    expect(JSON.parse(options?.body as string)).toEqual({ isActive: false });
+    expect(JSON.parse(options?.body as string)).toEqual({ id: "user-1", isActive: false });
   });
 
   it("changePassword — POSTs new password", async () => {
@@ -331,7 +331,7 @@ describe("users", () => {
 
     const [url, options] = vi.mocked(fetchFn).mock.calls[0]!;
     expect(String(url)).toContain("/my-project/users/user-1/change-password");
-    expect(JSON.parse(options?.body as string)).toEqual({ password: "newSecret123" });
+    expect(JSON.parse(options?.body as string)).toEqual({ id: "user-1", password: "newSecret123" });
   });
 
   it("supports dynamic attribute types via generics", async () => {
@@ -344,8 +344,8 @@ describe("users", () => {
     type UserAttrs = { department: string; level: number };
     const result = await client.users.list<UserAttrs>();
 
-    expect(result.data[0]?.attributes?.department).toBe("engineering");
-    expect(result.data[0]?.attributes?.level).toBe(3);
+    expect(result.data?.[0]?.attributes?.department).toBe("engineering");
+    expect(result.data?.[0]?.attributes?.level).toBe(3);
   });
 });
 
@@ -365,7 +365,7 @@ describe("roles", () => {
   });
 
   it("create — POSTs and returns id", async () => {
-    const fetchFn = makeJsonFetch({ value: "role-id" });
+    const fetchFn = makeJsonFetch({ result: "role-id" });
     const client = makeClient(fetchFn);
 
     const result = await client.roles.create({ name: "editor", permissions: ["content.read", "content.write"] });

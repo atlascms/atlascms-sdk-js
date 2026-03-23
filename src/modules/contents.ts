@@ -1,19 +1,18 @@
 import type { AtlasRequestOptions } from "../types/http";
-import type { Content, PagedResult } from "../types/entities";
+import type { Content, KeyResult, PagedResult } from "../types/entities";
 import type { ContentSeo } from "../types/seo";
 import type { AtlasHttpClient } from "../http/httpClient";
 import { appendQuery, joinPath, type QueryInput } from "./internal";
 
 export interface CreateContentInput<TAttributes extends Record<string, unknown> = Record<string, unknown>> {
+  // Swagger: optional `locale`, required `type` is provided by the path + body wrapper.
   locale?: string;
-  type: string;
+  // Swagger: `attributes` is an object (nullable). We keep it optional here.
   attributes?: TAttributes;
-  seo?: ContentSeo | null;
 }
 
 export interface UpdateContentInput<TAttributes extends Record<string, unknown> = Record<string, unknown>> {
-  locale?: string;
-  type: string;
+  // Swagger: only `attributes` and `seo` are allowed in UpdateContentCommand body.
   attributes?: TAttributes;
   seo?: ContentSeo | null;
 }
@@ -132,31 +131,44 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string): C
 
     async count(type, query, options) {
       const url = appendQuery(joinPath(restBaseUrl, `/contents/${encode(type)}/count`), query);
-      const result = await http.request<{ value?: number; key?: number }>({
+      const result = await http.request<KeyResult<number>>({
         url,
         method: "GET",
         ...options
       });
-      return typeof result?.value === "number" ? result.value : Number(result?.key ?? 0);
+      return result?.result ?? 0;
     },
 
     async create(type, payload, options) {
       const url = joinPath(restBaseUrl, `/contents/${encode(type)}`);
-      const result = await http.request<{ value?: string; key?: string }>({
+      // Swagger CreateContentCommand: { type, locale?, attributes? } (no `seo`).
+      const body = {
+        type,
+        locale: payload.locale,
+        attributes: payload.attributes
+      };
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
-        body: payload,
+        body,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async update(type, id, payload, options) {
       const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}`);
+      // Swagger UpdateContentCommand: { id, type, attributes?, seo? } (no `locale`).
+      const body = {
+        id,
+        type,
+        attributes: payload.attributes,
+        seo: payload.seo
+      };
       await http.request<void>({
         url,
         method: "PUT",
-        body: payload,
+        body,
         ...options
       });
     },
@@ -175,39 +187,45 @@ export function createContentsApi(http: AtlasHttpClient, restBaseUrl: string): C
       await http.request<void>({
         url,
         method: "POST",
-        body: { status },
+        // Swagger ChangeStatusCommand: { id, type, status }
+        body: { id, type, status },
         ...options
       });
     },
 
     async createTranslation(type, id, locale, options) {
       const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/create-translation`);
-      const result = await http.request<{ value?: string; key?: string }>({
+      // Swagger CreateContentTranslationCommand: { id, type, locale? }
+      const body = { id, type, locale };
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
-        body: { locale },
+        body,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async duplicate(type, id, locales, options) {
       const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/duplicate`);
-      const result = await http.request<{ value?: string; key?: string }>({
+      // Swagger DuplicateContentCommand: { id, type, locales? }
+      const body = { id, type, locales };
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
-        body: { locales },
+        body,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async updateSeo(type, id, payload, options) {
       const url = joinPath(restBaseUrl, `/contents/${encode(type)}/${encode(id)}/seo`);
+      // Swagger UpdateContentSeoCommand: { id, type, seo }
       await http.request<void>({
         url,
         method: "POST",
-        body: payload,
+        body: { id, type, seo: payload.seo },
         ...options
       });
     }

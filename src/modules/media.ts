@@ -53,7 +53,8 @@ export function createMediaApi(http: AtlasHttpClient, restBaseUrl: string): Medi
       await http.request<void>({
         url,
         method: "POST",
-        body: { tags },
+        // Swagger `SetMediaTagsCommand` requires `id` in the body.
+        body: { id, tags },
         ...options
       });
     },

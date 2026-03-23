@@ -1,5 +1,5 @@
 import type { AtlasRequestOptions } from "../types/http";
-import type { User, PagedResult } from "../types/entities";
+import type { KeyResult, User, PagedResult } from "../types/entities";
 import type { AtlasHttpClient } from "../http/httpClient";
 import { appendQuery, joinPath, type QueryInput } from "./internal";
 
@@ -73,12 +73,12 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): User
 
     async count(query, options) {
       const url = appendQuery(joinPath(restBaseUrl, "/users/count"), query);
-      const result = await http.request<{ value?: number; key?: number }>({
+      const result = await http.request<KeyResult<number>>({
         url,
         method: "GET",
         ...options
       });
-      return typeof result?.value === "number" ? result.value : Number(result?.key ?? 0);
+      return result?.result ?? 0;
     },
 
     async getById<TAttributes extends Record<string, unknown> = Record<string, unknown>>(
@@ -95,21 +95,22 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): User
 
     async create(payload, options) {
       const url = joinPath(restBaseUrl, "/users/register");
-      const result = await http.request<{ value?: string; key?: string }>({
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
         body: payload,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async update(id, payload, options) {
       const url = joinPath(restBaseUrl, `/users/${encode(id)}`);
+      const body = { id, ...payload };
       await http.request<void>({
         url,
         method: "PUT",
-        body: payload,
+        body,
         ...options
       });
     },
@@ -128,7 +129,8 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): User
       await http.request<void>({
         url,
         method: "POST",
-        body: { isActive },
+        // Swagger requires `id` in `ChangeUserStatusCommand`.
+        body: { id, isActive },
         ...options
       });
     },
@@ -138,7 +140,8 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): User
       await http.request<void>({
         url,
         method: "POST",
-        body: { password },
+        // Swagger requires `id` in `ChangeUserPasswordCommand`.
+        body: { id, password },
         ...options
       });
     }

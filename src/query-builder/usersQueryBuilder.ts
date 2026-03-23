@@ -39,6 +39,17 @@ export class UsersQueryBuilder extends BaseQueryBuilder<UserSortField> {
   public roles(value: string | string[], operator: UserRolesOperator = "any"): this {
     return this.filter("roles", operator, value);
   }
+
+  // Swagger exposes `roleId` as a dedicated query parameter (not under `filter[...]`).
+  public roleId(value: string): this {
+    return this.extra("roleId", value);
+  }
+
+  // Swagger exposes `resolve` for relation expansion.
+  public resolve(value: string | string[]): this {
+    const serialized = Array.isArray(value) ? value.join(",") : value;
+    return this.extra("resolve", serialized);
+  }
 }
 
 export function usersQuery(): UsersQueryBuilder {

@@ -1,11 +1,11 @@
 import type { AtlasRequestOptions } from "../types/http";
 import type { Component, IField } from "../types/models";
-import type { PagedResult } from "../types/entities";
+import type { KeyResult, PagedResult } from "../types/entities";
 import type { AtlasHttpClient } from "../http/httpClient";
-import { appendQuery, joinPath, type QueryInput } from "./internal";
+import { joinPath } from "./internal";
 
 export interface CreateComponentInput {
-  key: string;
+  key?: string | null;
   name?: string | null;
   description?: string | null;
   attributes?: IField[] | null;
@@ -19,22 +19,22 @@ export interface UpdateComponentInput {
 }
 
 export interface ComponentsApi {
-  list(query?: QueryInput, options?: AtlasRequestOptions): Promise<PagedResult<Component>>;
+  list(options?: AtlasRequestOptions): Promise<Component[]>;
 
   getById(id: string, options?: AtlasRequestOptions): Promise<Component>;
 
   create(payload: CreateComponentInput, options?: AtlasRequestOptions): Promise<{ id: string }>;
 
-  update(payload: UpdateComponentInput, options?: AtlasRequestOptions): Promise<void>;
+  update(payload: UpdateComponentInput, options?: AtlasRequestOptions): Promise<{ id: string }>;
 
   remove(id: string, options?: AtlasRequestOptions): Promise<void>;
 }
 
 export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string): ComponentsApi {
   return {
-    async list(query?, options?) {
-      const url = appendQuery(joinPath(restBaseUrl, "/components"), query);
-      return http.request<PagedResult<Component>>({
+    async list(options) {
+      const url = joinPath(restBaseUrl, "/content-types/components");
+      return http.request<Component[]>({
         url,
         method: "GET",
         ...options
@@ -42,7 +42,7 @@ export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string):
     },
 
     async getById(id, options) {
-      const url = joinPath(restBaseUrl, `/components/${encode(id)}`);
+      const url = joinPath(restBaseUrl, `/content-types/components/${encode(id)}`);
       return http.request<Component>({
         url,
         method: "GET",
@@ -51,28 +51,29 @@ export function createComponentsApi(http: AtlasHttpClient, restBaseUrl: string):
     },
 
     async create(payload, options) {
-      const url = joinPath(restBaseUrl, "/components");
-      const result = await http.request<{ value?: string; key?: string }>({
+      const url = joinPath(restBaseUrl, "/content-types/components");
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "POST",
         body: payload,
         ...options
       });
-      return { id: String(result?.value ?? result?.key ?? "") };
+      return { id: String(result?.result ?? "") };
     },
 
     async update(payload, options) {
-      const url = joinPath(restBaseUrl, `/components/${encode(payload.id)}`);
-      await http.request<void>({
+      const url = joinPath(restBaseUrl, `/content-types/components/${encode(payload.id)}`);
+      const result = await http.request<KeyResult<string>>({
         url,
         method: "PUT",
         body: payload,
         ...options
       });
+      return { id: String(result?.result ?? "") };
     },
 
     async remove(id, options) {
-      const url = joinPath(restBaseUrl, `/components/${encode(id)}`);
+      const url = joinPath(restBaseUrl, `/content-types/components/${encode(id)}`);
       await http.request<void>({
         url,
         method: "DELETE",
