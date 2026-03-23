@@ -1,6 +1,6 @@
 {
   "name": "atlascms-sdk-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "TypeScript SDK for Atlas CMS REST and GraphQL APIs.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

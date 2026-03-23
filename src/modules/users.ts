@@ -129,7 +129,6 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): User
       await http.request<void>({
         url,
         method: "POST",
-        // Swagger requires `id` in `ChangeUserStatusCommand`.
         body: { id, isActive },
         ...options
       });
@@ -140,7 +139,6 @@ export function createUsersApi(http: AtlasHttpClient, restBaseUrl: string): User
       await http.request<void>({
         url,
         method: "POST",
-        // Swagger requires `id` in `ChangeUserPasswordCommand`.
         body: { id, password },
         ...options
       });
